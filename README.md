@@ -16,6 +16,7 @@ Also:
 - bedtools
   
 =============================================
+
 Short Description:
 
 Pipeline is developed for exome sequencing data and works with curated gene list (such as e.g. relevant to Alzheimer's disease).
@@ -24,6 +25,7 @@ Currently it is set up as an “add-on” tool to operate on provided individual
 were already pre-processed (e.g. merged, matefixed, sorted, marked duplicates, etc.)
 
 =============================================
+
 Accepted inputs are:
 
 - The hg38 reference genome, version: http://hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/hg38.fa.gz
