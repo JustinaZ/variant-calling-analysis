@@ -19,7 +19,7 @@ Also:
 
 Short Description:
 
-Pipeline is developed for exome sequencing data and works with curated gene list (such as e.g. relevant to Alzheimer's disease).
+Pipeline is developed for exome sequencing data and works with curated gene list (such as e.g. genes relevant to the Alzheimer's disease).
 The goal is to find variants that are "rare", are in coding regions or within 50bp of coding region.
 Currently it is set up as an “add-on” tool to operate on provided individual/intermediate genoic vcf files, assuming samples
 were already pre-processed (e.g. merged, matefixed, sorted, marked duplicates, etc.)
