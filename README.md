@@ -14,7 +14,8 @@ Also:
 - Java
 - bcftools
 - bedtools
-  
+
+
 =============================================
 
 Short Description:
@@ -34,7 +35,9 @@ These files are used in the pipeline for subsequent joint genotyping, where mult
 - The .csi extension indicates 
 
 
+====================================================================
 
+  <img width="1007" alt="Screenshot 2024-08-13 at 4 32 29 PM" src="https://github.com/user-attachments/assets/a91b197b-8a48-4cd2-bd2b-8896c407c601">
 
 
 
