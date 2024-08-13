@@ -14,4 +14,8 @@ Also:
 - Java
 - bcftools
 - bedtools
+======================================
+
+Pipeline is developed for exome sequencing data and works with curated gene list (relevant to Alzheimer's disease)
+
 
