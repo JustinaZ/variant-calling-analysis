@@ -138,7 +138,7 @@ process createSampleMap {
         echo "\${basename} \${full_path}" >> temp_sample_map.txt
     done
     
-    // Ensure only one file is generated (recall -  had some issues )
+    # Ensure only one file is generated (recall -  had some issues )
     mv temp_sample_map.txt sample_map.txt
     """
 }
