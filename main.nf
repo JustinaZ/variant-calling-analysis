@@ -82,7 +82,7 @@ process createDictionary {
  */
 process BWA_INDEX {
   tag{"BWA_INDEX ${referenceFile}"}
-  label 'process_low'
+  label 'process_high'
 
   publishDir("${params.outdir}/bwa_index", mode: 'copy')
 
