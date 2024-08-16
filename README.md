@@ -37,7 +37,8 @@ These files are used in the pipeline for subsequent joint genotyping, where mult
 
 ====================================================================
 
-  <img width="1007" alt="Screenshot 2024-08-13 at 4 32 29 PM" src="https://github.com/user-attachments/assets/a91b197b-8a48-4cd2-bd2b-8896c407c601">
+
+<img width="986" alt="Screenshot 2024-08-16 at 1 17 28 PM" src="https://github.com/user-attachments/assets/5a3a597a-bc03-4f49-8e3a-a4e1fa9a41e2">
 
 
 
