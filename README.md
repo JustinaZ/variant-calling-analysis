@@ -1,19 +1,25 @@
 # variant-calling-analysis
 Variant Calling Pipeline with Nextflow
 
-Software needs:
+Software needs (local instalation):
+- Nexflow
+- R (optional)
+- Docker
+- Java (Nextflow itself requires Java to run)
+
+
+Relevant Docker BioContainers:  
 - GATK4
 - BWA
 - Picard Tools
 - Samtools
 - SnpEff
-- R (dependency for some GATK steps)
-- Nextflow
-
-Also: 
-- Java
 - bcftools
 - bedtools
+- R
+
+ 
+
 
 
 =============================================
