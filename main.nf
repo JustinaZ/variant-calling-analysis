@@ -400,7 +400,7 @@ process JointCallsPerChromosome {
     script:
     """
     gatk --java-options "-Xmx2g -XX:ParallelGCThreads=2" GenotypeGVCFs \
-        -R /Users/justinazurauskiene/Desktop/vc_docker/reference_data/hg38.fa  \
+        -R /Users/justinazurauskiene/Desktop/vc_docker/reference_data/hg38.fa  \    // this should be changed  
         -V gendb://${db_path} \
         -L chr${chromosome} \
         -O ${chromosome}_joint.vcf.gz
