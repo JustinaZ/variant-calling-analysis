@@ -152,9 +152,11 @@ workflow {
     .map { chr -> tuple(chr, file(params.genome), file(params.db_path)) }
     | JointCallsPerChromosome                                         // Pass tuples to the process
 
+   // Generate the merged VCF file
+    merged_vcf_channel = MergeVcfs(chr_vcfs_ch)
 
-   // Merge VCFs in a single process
-    MergeVcfs(chr_vcfs_ch)
+    // Index the merged VCF file
+    CreateIndex(merged_vcf_channel)
 }
 
 
@@ -448,5 +450,30 @@ process MergeVcfs {
         I=X_joint.vcf.gz \
         I=Y_joint.vcf.gz \
         O=merged.vcf.gz
+    """
+}
+
+/*
+ *  Process to create .tbi index file for merged.vcf.gz
+ */
+
+process CreateIndex {
+    tag "INDEX_MERGED ${merged_vcf}"  // Tag with the file name for tracking
+    label 'process_low'
+
+    container 'broadinstitute/gatk:4.5.0.0'
+
+    publishDir "${params.joint_outdir}", mode: 'copy'
+
+    input:
+    path merged_vcf  // Input is the merged VCF file from `MergeVcfs`
+
+    output:
+    path "${merged_vcf}.tbi"  // Output is the index file
+
+    script:
+    """
+    echo "Creating index for merged file: ${merged_vcf}"
+    gatk --java-options "-Xmx8g" IndexFeatureFile -I ${merged_vcf}
     """
 }
