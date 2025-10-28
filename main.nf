@@ -1472,7 +1472,7 @@ process SubsetPassVariants {
 
 /* INFO:
  * Annotate variants with predicted functional effects using SnpEff.
- * A bit bugged, needs fixing
+ *  ---------- HAS A BUG, STOPPED WORKING & needs fixing -------------------
  *
  * Inputs
  *   • vcf     : bgzipped VCF to annotate (e.g., AD_subset_genes.vcf.gz as we have)
