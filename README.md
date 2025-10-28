@@ -42,6 +42,10 @@ These files are used in the pipeline for subsequent joint genotyping, where mult
 
 Current target for the workflow is summarised in here:
 
+<img width="11063" height="3848" alt="target_pipeline" src="https://github.com/user-attachments/assets/1c10fa3b-ba07-460d-a5a2-3a0fe043e459" />
+
+
+
 
 
 
