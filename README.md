@@ -16,7 +16,9 @@ Relevant Docker BioContainers:
 - bcftools
 - bedtools
 
+To run it using terminal/command line:
 
+nextflow run main.nf
 
 =============================================
 
@@ -37,7 +39,10 @@ These files are used in the pipeline for subsequent joint genotyping, where mult
 
 
 ====================================================================
+
 Current target for the workflow is summarised in here:
+
+
 
 
 
