@@ -1,5 +1,5 @@
-# variant-calling-analysis
-Variant Calling Pipeline with Nextflow
+# Rare-variant-identification
+Variant Calling Pipeline + Rare variant identification with Nextflow
 
 Software needs (local instalation):
 - Nexflow
