@@ -45,30 +45,43 @@ These files are used in the pipeline for subsequent joint genotyping, where mult
 -	The .bed file that is matching samples (AD case study: NWGC provided the relevant one)
   
 -	Other supporting files/resources (via gsutil tool):
+  
   o	Download HapMap (for SNP):
+  
     gsutil cp gs://gcp-public-data--broad-references/hg38/v0/hapmap_3.3.hg38.vcf.gz 
+    
     gsutil cp gs://gcp-public-data--broad-references/hg38/v0/hapmap_3.3.hg38.vcf.gz.tbi
 
   o	Download Omni (for SNP):
+  
     gsutil cp gs://gcp-public-data--broad-references/hg38/v0/1000G_omni2.5.hg38.vcf.gz 
+    
     gsutil cp gs://gcp-public-data--broad-references/hg38/v0/1000G_omni2.5.hg38.vcf.gz.tbi
 
   o	Download 1000 Genomes High-Confidence SNPs (for SNP):
+  
     gsutil cp gs://gcp-public-data--broad-references/hg38/v0/1000G_phase1.snps.high_confidence.hg38.vcf.gz
+    
     gsutil cp gs://gcp-public-data--broad-references/hg38/v0/1000G_phase1.snps.high_confidence.hg38.vcf.gz.tbi
 
   o	Download Mills and 1000G Gold Standard INDELs (for INDEL):
+  
     gsutil cp gs://gcp-public-data--broad-references/hg38/v0/Mills_and_1000G_gold_standard.indels.hg38.vcf.gz 
+    
     gsutil cp gs://gcp-public-data--broad-references/hg38/v0/Mills_and_1000G_gold_standard.indels.hg38.vcf.gz.tbi 
 
   o	Download dbSNP (for INDEL):
+  
     gsutil cp gs://genomics-public-data/resources/broad/hg38/v0/Homo_sapiens_assembly38.dbsnp138.vcf 
+    
     gsutil cp gs://genomics-public-data/resources/broad/hg38/v0/Homo_sapiens_assembly38.dbsnp138.vcf.idx
 
   o	Download genomAD (for allele frequency info: https://gnomad.broadinstitute.org/downloads): 
+  
     gsutil cp gs://gcp-public-data--gnomad/release/2.1.1/liftover_grch38/vcf/exomes/gnomad.exomes.r2.1.1.sites.liftover_grch38.vcf.bgz
 
 p.s. or manually download from here:
+
  https://console.cloud.google.com/storage/browser/genomics-public-data/resources/broad/hg38/v0;tab=objects?inv=1&invt=AbmUZw&prefix=&forceOnObjectsSortingFiltering=false
 
 =============================================
