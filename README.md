@@ -1,7 +1,7 @@
 # Rare-variant-identification
 Variant Calling Pipeline + Rare variant identification with Nextflow.
 
-It was build to run on Macs; specifically tested on:  MacBook Pro, M4Pro Chip, 48GB Memory 
+It was built to run on Macs; specifically tested on:  MacBook Pro, M4Pro Chip, 48GB Memory 
 
 Software needs (local instalation):
 - Nexflow
