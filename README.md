@@ -85,6 +85,7 @@ Current target for the workflow is summarised in here:
 
 
 
+NOTE: code after snpeff step should be cleaned
 
 
 
