@@ -1,0 +1,69 @@
+A Nextflow and Docker Pipeline for Rare Variant Detection in Targeted Gene Sets for Whole Exome Sequencing Studies
+Justina Zurauskiene
+
+
+1.	Introduction
+Detecting rare genetic variants in specific sets of disease-relevant genes is a significant challenge in genomic analysis. Rare variants—those occurring at very low frequency in the population—are often implicated in complex diseases e.g. Alzheimer’s Disease (AD), yet their identification is difficult due to their scarcity and the noisy background of sequencing data. These low-frequency variants require careful filtering and validation. Targeted analysis focusing on known disease genes could improve interpretability, but it demands a robust bioinformatics workflow to sift through thousands of variants while applying strict quality and frequency filters.
+In this technical report, we present a fully automated pipeline for rare variant detection from whole exome data, built using Nextflow and Docker containerization. The pipeline is designed to follow the Genome Analysis Toolkit (GATK) Best Practices for joint genotyping of multiple samples and variant quality score recalibration (VQSR) – followed by functional annotation of variants with SnpEff. Our motivation for using Nextflow and Docker is to ensure reproducibility, portability, and scalability of the workflow. By containerizing all software dependencies and orchestrating the steps with Nextflow, the pipeline can be run on different computing platforms (from local machines to HPC clusters or cloud) with consistent results. This approach addresses a common limitation of prior command-line protocols, where analyses had to be repeated with ad-hoc scripts and could suffer from software version conflicts or manual errors.
+A variety of software tools have been developed for calling genetic variants from high-throughput sequencing data and GATK remains the most widely adopted standard in the field. For our pipeline, the GATK was chosen due to its widespread adoption, robust joint calling and filtering framework, and its compatibility with industry-standard data formats also mature, and well-supported ecosystem that is crucial for a reproducible performance.
+1.1.	What this pipeline does 
+The workflow automates the entire process from raw sequencing reads to a curated list of rare variant calls in genes of interest. The pipeline assumes that initial processing steps: read alignment to the reference genome, duplicate marking, base quality recalibration (using GATK), individual sample variant calling was performed with GATK HaplotypeCaller (currently done at NWGC).  Joint genotyping across all samples is then performed to produce a multi-sample variant call set. Followed by the application of VQSR to filter out low-quality calls using a machine learning model trained on known variant resources. The remaining high-confidence variants are further processed to generate a subset based on the provided gene set, retaining those within coding regions of the specified genes and extending ±50 bp to capture splice-site and nearby regulatory variants. SnpEff is then used to determine their effects on genes, and the pipeline automatically filters them according to a rare-variant detection threshold. The output is an easily interpretable, annotated VCF file that highlights rare variants in the genes of interest. All steps and parameters are encapsulated in the Nextflow workflow, allowing the entire analysis to be executed with a single command and minimal user intervention.
+Crucially, the main distinguishing feature of this pipeline is that it is tailored for a disease-specific gene sets. We demonstrate the functionality of this tool on an Alzheimer’s Disease dataset, where we supply a list of AD-related genes (e.g. APP, PSEN1, TREM2, etc.) and the pipeline automatically produce joint variant calling and reporting based on these targets. This makes it straightforward to re-run the analysis for a different gene panel by simply providing a new gene list as a BED file with regions of interest, without modifying the existing code. A separate R code is provided to generate compatible gene list BED file.   Such flexibility is valuable for researchers studying rare variants in various diseases, as the same pipeline can be reused with different gene sets.
+2.	Methods
+2.1.	Software Requirements
+This pipeline was developed and tested on Mac OS with Apple M4 Pro chip, and 48GB of memory. The following local software installations were used:  
+•	Docker Desktop 
+•	Nexflow
+•	Java
+
+2.2.	Organisational Set up
+The key feature of this pipeline is its precise organisational structure, which allows for Nextflow to execute all commands in a smooth sequence. Each new project should follow the provided working-directory structure as given in Figure 1(a). Once main structure is set, we then need to populate data/ sub-directories; one of which will house the capture or target BED file, targets.bed, from an exome capture kit (i.e. relevant exome interval list that matches project sample files). The second BED file, genes_of_interest.bed, is intended to contain a custom subset of regions or genes. Thus, while the first BED file defines the full set of exonic intervals used during exome sequencing, the second BED file should be smaller list of critical genes or intervals relevant to current study (e.g., known Alzheimer’s disease genes, or any other disease focused gene list (see Figure 1(b) in red. and Results section for detailed example). Individual samples should be included under gvcf_samples/ directory; it is important that each included sample is in correct format, i.e. already pre-processed by following GATK best practices guidelines: matefixed, sorted, dublicates marked, recall adjusted. Although pipeline only requires sample files to be present, the accompanying TBI index file (if they exists) can be included too but with a restriction – that index file has matching name pattern as its sample name. However, if index files are not available, our pipeline will produce them as it runs. 
+ 
+Figure 1. Setting up variant calling project. (a) Diagram illustrates initial directory created and named as project-name. Within it, subdirectories and two Nexflow files should be included with these exact names and organisational structure. (b) data folder is populated with project sample data  and relevant BED  files (added examples are given in red color).
+The reference_data/ directory should contain the genome reference files and their associated index/dictionary files. The minimal requirement for successful pipeline execution is a FASTA‐formatted reference genome file (e.g., hg38.fa see Figure 2(a)). Upon detecting this file, the pipeline will generate the following index files automatically:
+o	hg38.fa.fai – A samtools faidx index used for extracting specific genomic regions.
+o	hg38.dict – A GATK‐compatible sequence dictionary storing contig names and lengths for variant calling.
+o	hg38.fa.amb, hg38.fa.ann, hg38.fa.bwt, hg38.fa.pac, hg38.fa.sa – BWA index files required for alignment purposes.
+
+ 
+Figure 2 Setting up variant calling project. (a) Illustrates reference_data/ directory populated with hg38.fa file (added example file is given in red color). (b) Illustrates gatk_resources/ directory populated with relevant files (added example files are given in red color).
+Next, the gatk_resources/ directory should hold external resource files (see Figure 2(b)) that will be used by the GATK during variant recalibration. These files provide sets of known variants and serve as training data (i.e. truth sets) when running processes associated with VQSR. The core requirement is that external files should come in compressed, .vcf.gz, format with associated .tbi index file. We list files below: 
+o	Homo_sapiens_assembly38.dbsnp138.vcf.gz
+o	1000G_phase1.snps.high_confidence.hg38.vcf.gz
+o	hapmap_3.3.hg38.vcf.gz
+o	1000G_omni2.5.hg38.vcf.gz
+o	Mills_and_1000G_gold_standard.indels.hg38.vcf.gz
+These and corresponding index files can be downloaded from the GATK Resource Bundle. Note, although dedicated Google Cloud bucket stores these files, the provided dbSNP build 138 (GRCh38/hg38) file must be .gz compressed locally, also accompanying .idx index file is not compatible with our pipeline, therefore .tbi will be generated instead.
+The other directories: output/, snpEff_db_resource/, work/, will be populated with the pipeline outputs, which we describe in sections below. Finally, there should be two Nexflow files: main.nf – containing pipeline code, and nextflow.config – containing additional configuration setting.  At this point the project set up is complete and rare variant detection in targeted gene sets can be run. Analysis can be executed in command line by simply navigating to the project directory (e.g. cd /Users/your-path-to-the-project/project-name) and typing, nextflow run main.nf. 
+
+
+2.3.	Process based implementation
+Our pipeline is implemented in Nexflow, which is an open-source workflow framework for building data pipelines, relevant in bioinformatics projects. It uses a domain-specific language based on Groovy syntax to define processes (i.e. individual task units) that communicate via channels (i.e. data streams). Executing Nexflow pipelines automatically handles parallelization; it is compatible with containerization (e.g., Docker, Singularity), and deployment on various compute platforms (local, HPC, or cloud).  The pipeline currently contains a number of processes, each of which handles a specific analysis task.
+
+
+2.4.	Filtering and Annotation of Rare Variants
+In addition to VQSR, population frequency approach can be taken as an essential step to filter and annotate variants to pinpoint those that are truly rare and potentially impactful. Frequency filtering is typically the first criterion: variants with minor allele frequency (MAF) above a threshold (commonly 1% or 0.5%) in the general population are usually excluded from “rare variant” analyses. This is because common variants are less likely to be highly penetrant for rare diseases. Our pipeline leverages population databases like gnomAD to obtain allele frequencies; for example, a variant observed at >1% in any gnomAD subpopulation would be considered as “common”, thus filtered out. This approach is standard in rare variant studies (citation from powerpoint). By applying a MAF cutoff, we ensure that the remaining variants are either novel or very uncommon, meriting further investigation for disease relevance. We note that in extremely rare disorders or familial studies, even lower frequency cutoffs (like 0.1% or absence in controls) might be used, but for complex diseases like AD a 1% threshold is a reasonable balance to not miss variants that could still be rare risk factors.
+
+
+2.5.	Target Gene BED File
+The target gene list should be prepared as a .BED file to be compatible with our rare variant identification pipeline. We have included R script, get_gene_coords.R, that automates gene coordinate extraction. It takes genes.csv input file where users list relevant HGNC symbols in a single column. The script then queries the current Ensemble human dataset release via biomaRt to extract stable Entrez gene identifier, chromosomal location and start/end. The genes_with_coordinates.cvs and matching coordinate-ordered genes_of_interest.BED file is saved as and output. The .cvs file can be used to manually inspect/QC table to confirm that every input symbol received a chromosome, start and end coordinates; while coordinate-ordered .BED file (columns: chr, start, end, gene_symbol, entrez_id, strand = “.”) is compatible with standard bioinformatics tools and will be used within pipeline to filter genes.
+Results
+Finish
+
+Discussion and Conclusions
+ Finish
+
+
+
+
+Literature:
+1.	Di Tommaso, Paolo, Maria Chatzou, Evan W. Floden, Pablo Prieto Barja, Emilio Palumbo, and Cedric Notredame. "Nextflow enables reproducible computational workflows." Nature biotechnology 35, no. 4 (2017): 316-319.
+2.	Merkel, Dirk. "Docker: lightweight linux containers for consistent development and deployment." Linux j 239, no. 2 (2014): 2.
+3.	Goswami, Chayanika, Amrita Chattopadhyay, and Eric Y. Chuang. "Rare variants: data types and analysis strategies." Annals of Translational Medicine 9, no. 12 (2021): 961.
+4.	Cirulli, Elizabeth T., Simon White, Robert W. Read, Gai Elhanan, William J. Metcalf, Francisco Tanudjaja, Donna M. Fath et al. "Genome-wide rare variant analysis for thousands of phenotypes in over 70,000 exomes from two cohorts." Nature communications 11, no. 1 (2020): 542.
+5.	Yuan, Jian, Kai Li, Hui Peng, Yue Zhang, Yinghao Yao, Myopia Associated Genetics, Jia Qu, Jianzhong Su, and Intervention Consortium. "Protocol for detecting rare and common genetic associations in whole-exome sequencing studies using MAGICpipeline." STAR protocols 5, no. 1 (2024): 102806.
+6.	Holstege, Henne, Marc Hulsman, Camille Charbonnier, Benjamin Grenier-Boley, Olivier Quenez, Detelina Grozeva, Jeroen GJ Van Rooij et al. "Exome sequencing identifies rare damaging variants in ATP8B4 and ABCA1 as risk factors for Alzheimer’s disease." Nature genetics 54, no. 12 (2022): 1786-1794.
+7.	Ewels, Philip A., Alexander Peltzer, Sven Fillinger, Harshil Patel, Johannes Alneberg, Andreas Wilm, Maxime Ulysse Garcia, Paolo Di Tommaso, and Sven Nahnsen. "The nf-core framework for community-curated bioinformatics pipelines." Nature biotechnology 38, no. 3 (2020): 276-278.
+8.	https://www.alzforum.org/mutations/trem2-r47h
+9.	A practical introduction to GATK 4 on Biowulf (NIH HPC). https://hpc.nih.gov/training/gatk_tutorial/index.html
+
