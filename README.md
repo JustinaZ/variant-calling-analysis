@@ -3,6 +3,17 @@ Variant Calling Pipeline + Rare variant identification with Nextflow.
 
 It was built to run on Macs; specifically tested on:  MacBook Pro, M4Pro Chip, 48GB Memory 
 
+=============================================
+
+Current target for the workflow is summarised in here:
+
+<img width="11063" height="3848" alt="target_pipeline" src="https://github.com/user-attachments/assets/1c10fa3b-ba07-460d-a5a2-3a0fe043e459" />
+
+
+NOTE: code after snpeff step should be cleaned
+
+=============================================
+
 Software needs (local instalation):
 - Nexflow
 - Docker
@@ -92,13 +103,7 @@ All generated output (final and intermediate files) will appear in "output" dire
 
 ====================================================================
 
-Current target for the workflow is summarised in here:
 
-<img width="11063" height="3848" alt="target_pipeline" src="https://github.com/user-attachments/assets/1c10fa3b-ba07-460d-a5a2-3a0fe043e459" />
-
-
-
-NOTE: code after snpeff step should be cleaned
 
 
 
