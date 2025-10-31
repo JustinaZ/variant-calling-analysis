@@ -3,7 +3,6 @@ Variant Calling Pipeline + Rare variant identification with Nextflow.
 
 It was built to run on Macs; specifically tested on:  MacBook Pro, M4Pro Chip, 48GB Memory 
 
-=============================================
 
 Current target for the workflow is summarised in here:
 
