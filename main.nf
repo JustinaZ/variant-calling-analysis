@@ -1473,7 +1473,8 @@ process SubsetPassVariants {
 /* INFO:
  * Annotate variants with predicted functional effects using SnpEff.
  *  ---------- HAS A BUG, STOPPED WORKING & needs fixing -------------------
- *
+ * check container before running:
+ * https://biocontainers.pro/tools/snpeff
  * Inputs
  *   • vcf     : bgzipped VCF to annotate (e.g., AD_subset_genes.vcf.gz as we have)
  *   • vcf_tbi : Tabix index for the input VCF
