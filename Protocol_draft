@@ -47,11 +47,16 @@ In addition to VQSR, population frequency approach can be taken as an essential 
 
 2.5.	Target Gene BED File
 The target gene list should be prepared as a .BED file to be compatible with our rare variant identification pipeline. We have included R script, get_gene_coords.R, that automates gene coordinate extraction. It takes genes.csv input file where users list relevant HGNC symbols in a single column. The script then queries the current Ensemble human dataset release via biomaRt to extract stable Entrez gene identifier, chromosomal location and start/end. The genes_with_coordinates.cvs and matching coordinate-ordered genes_of_interest.BED file is saved as and output. The .cvs file can be used to manually inspect/QC table to confirm that every input symbol received a chromosome, start and end coordinates; while coordinate-ordered .BED file (columns: chr, start, end, gene_symbol, entrez_id, strand = “.”) is compatible with standard bioinformatics tools and will be used within pipeline to filter genes.
+
+
 Results
+
 Finish
 
+
 Discussion and Conclusions
- Finish
+
+Finish
 
 
 
