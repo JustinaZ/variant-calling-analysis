@@ -614,15 +614,18 @@ if (!file("${projectDir}/output/joint_vcfs/merged.vcf.gz.tbi").exists()) {
 
 // Output will be a new file with annotations, ${params.out_prefix}.snpeff.vcf.gz, plus its .tbi.
 
+    annotated_vcf = SnpEffAnnotation(subset_vcf_result)
+    
 
-    annotated_plain = SnpEffAnnotation(
-       subset_vcf_result,		// tuple (VCF.gz, VCF.gz.tbi)
-       snpeff_db_dir_ch,                // dir containing `data/<genome>/...`
-       snpeff_genome_ch 		// e.g., "hg38" 
- )
+//annotated_plain = SnpEffAnnotation(
+//       subset_vcf_result,		// tuple (VCF.gz, VCF.gz.tbi)
+//       snpeff_db_dir_ch,                // dir containing `data/<genome>/...`
+//       snpeff_genome_ch 		// e.g., "hg38" 
+// )
 
-    // then compress+index in a tiny htslib step
-    //annotated_vcf = BgzipTabix(annotated_plain)
+// then compress+index in case SnpEffAnnotation cannot handle anymore
+
+//annotated_vcf = BgzipTabix(annotated_plain)
 
 }
 
@@ -1503,20 +1506,22 @@ process SnpEffAnnotation {
 
   input:
     tuple path(vcf), path(vcf_tbi)
-    path  snpeff_db_dir
-    val   snpeff_genome
+    //path  snpeff_db_dir
+    //val   snpeff_genome
 
   output:
-    path "${params.out_prefix}.snpeff.vcf"
+    tuple path("${params.out_prefix}.snpeff.vcf.gz"), path("${params.out_prefix}.snpeff.vcf.gz.tbi")
 
   script:
   """
 
-  snpEff -v -nodownload -noLog \
-    -dataDir "!{snpeff_db_dir}" \
-    -threads ${task.cpus} \
-    "!{snpeff_genome}" \
-    "!{vcf}" \
-    > "${params.out_prefix}.snpeff.vcf"
+  snpEff -v \\
+      -dataDir ${params.snpeff_db_dir} \\
+      -threads ${params.snpeff_threads} \\
+      ${params.snpeff_genome} \\
+      ${vcf} \\
+      | bgzip -c > ${params.out_prefix}.snpeff.vcf.gz
+
+    tabix -p vcf ${params.out_prefix}.snpeff.vcf.gz
   """
 }
