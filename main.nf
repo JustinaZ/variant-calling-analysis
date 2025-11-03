@@ -105,8 +105,6 @@ params.snpeff_genome = "hg38"
 params.snpeff_threads = 4
 params.out_prefix     = "annotated_vc_subset"
 
-//params.snpeff_allow_download = false
-
 /*
 ========================================
 ========================================
@@ -454,11 +452,11 @@ workflow {
 
 
 // ------------- append everything (all samples) in that map -------------
-//   appendSamplesToGenomicsDB(
-//       sample_map_ch,                 // the path emitted by createSampleMap
-//       Channel.value(params.tmp_dir), // tmp directory as a channel
-//       Channel.value(params.db_path)  // existing GenomicsDB workspace
-//   )
+   appendSamplesToGenomicsDB(
+       sample_map_ch,                 // the path emitted by createSampleMap
+       Channel.value(params.tmp_dir), // tmp directory as a channel
+       Channel.value(params.db_path)  // existing GenomicsDB workspace
+   )
 
 
 //-----------------------------------------------------------------------------
@@ -469,16 +467,16 @@ workflow {
 // Commented out -  if not running new joint calls
 // The run time for all 32 samples is ~ 4h 4m 59s
 
-// chr_ch
-//   .view { "Emitting chromosome: $it" }
-//   .map { chr -> tuple(
-//       chr,
-//       file(params.genome),
-//       file("${params.genome}.fai"),
-//       file(params.dict),                 
-//       file(params.db_path)
-//   )}
-//   | JointCallsPerChromosome
+ chr_ch
+   .view { "Emitting chromosome: $it" }
+   .map { chr -> tuple(
+       chr,
+       file(params.genome),
+       file("${params.genome}.fai"),
+       file(params.dict),                 
+       file(params.db_path)
+   )}
+   | JointCallsPerChromosome
 
 
 // Merge VCFs from per-chromosome calls
@@ -612,11 +610,11 @@ if (!file("${projectDir}/output/joint_vcfs/merged.vcf.gz.tbi").exists()) {
 // 9) Annotate with SnpEff
 //-----------------------------------------------------------------------------
 
-// Output will be a new file with annotations, ${params.out_prefix}.snpeff.vcf.gz, plus its .tbi.
+// Output will be a new file with annotations
 
     annotated_vcf = SnpEffAnnotation(subset_vcf_result)
     
-
+// Alternative, if above fails, always check Docker image!
 //annotated_plain = SnpEffAnnotation(
 //       subset_vcf_result,		// tuple (VCF.gz, VCF.gz.tbi)
 //       snpeff_db_dir_ch,                // dir containing `data/<genome>/...`
@@ -695,7 +693,7 @@ process createDictionary {
  *  • reference index tuple : [ reference FASTA , associated *.{amb,ann,bwt,pac,sa} ]
  *
  * NOTE: not consumed in the current workflow, but kept for
- *       future pipeline extensions that may need BWA-MEM.
+ *       future pipeline extensions that may need BWA.
  */
 
 
@@ -1475,7 +1473,7 @@ process SubsetPassVariants {
 
 /* INFO:
  * Annotate variants with predicted functional effects using SnpEff.
- *  ---------- HAS A BUG, STOPPED WORKING & needs fixing -------------------
+ *  ---------- HAS A BUG?, CONTAINER STOPPED WORKING & needs fixing -------------------
  * check container before running:
  * https://biocontainers.pro/tools/snpeff
  * Inputs
